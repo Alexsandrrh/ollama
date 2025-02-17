@@ -1,35 +1,22 @@
-# Используем базовый образ Ubuntu 20.04
-FROM ubuntu:20.04
+# Используем официальный образ Ubuntu 22.04 в качестве базового
+FROM ubuntu:22.04
 
-# Устанавливаем необходимые зависимости
+# Обновляем пакеты и устанавливаем необходимые утилиты
 RUN apt-get update && apt-get install -y \
+    curl \
     wget \
-    tar \
+    unzip \
     ca-certificates \
-    libglib2.0-0 \
-    libsm6 \
-    libxext6 \
-    libxrender1 \
     && rm -rf /var/lib/apt/lists/*
 
-# Скачиваем и устанавливаем Ollama (замените URL на актуальный, если необходимо)
-RUN wget -O /tmp/ollama.tar.gz "https://example.com/ollama-linux-cpu.tar.gz" && \
-    tar -xzvf /tmp/ollama.tar.gz -C /usr/local/bin && \
-    rm /tmp/ollama.tar.gz && \
-    chmod +x /usr/local/bin/ollama
+# Скачиваем архив с бинарным файлом Ollama и распаковываем его
+RUN curl -L -o /tmp/ollama.zip https://ollama.com/downloads/ollama-linux.zip && \
+    unzip /tmp/ollama.zip -d /usr/local/bin && \
+    chmod +x /usr/local/bin/ollama && \
+    rm /tmp/ollama.zip
 
-# (Опционально) Скачиваем модель llama3.1:latest, если она не загружается динамически.
-# Здесь предполагается, что модель будет скачана при первом запуске или уже установлена.
-# RUN wget -O /models/llama3.1.tar.gz "https://example.com/llama3.1.tar.gz" && \
-#     mkdir -p /models/llama3.1 && \
-#     tar -xzvf /models/llama3.1.tar.gz -C /models/llama3.1 && \
-#     rm /models/llama3.1.tar.gz
+# Открываем порт, который использует Ollama (при необходимости измените номер порта)
+EXPOSE 11434
 
-# Открываем порт, если Ollama предоставляет API или веб-интерфейс (при необходимости)
-EXPOSE 8080
-
-# Задаем переменные окружения (если требуется)
-ENV MODEL=llama3.1:latest
-
-# Запускаем Ollama в режиме сервера, используя CPU (флаг --cpu-only, если предусмотрен)
-CMD ["/usr/local/bin/ollama", "serve", "--model", "llama3.1:latest", "--cpu-only"]
+# Определяем команду для запуска Ollama
+CMD ["ollama", "start"]
