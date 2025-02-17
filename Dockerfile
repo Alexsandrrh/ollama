@@ -1,5 +1,3 @@
 FROM ollama/ollama
-
-RUN /bin/ollama serve
-
+CMD ["/bin/ollama serve"]
 EXPOSE 11434
