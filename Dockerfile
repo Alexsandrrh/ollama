@@ -1,3 +1,3 @@
 FROM ollama/ollama
-CMD []
+CMD ["serve"]
 EXPOSE 11434
